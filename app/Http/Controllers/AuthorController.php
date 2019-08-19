@@ -45,6 +45,7 @@ class AuthorController extends Controller
         if(is_null($author)){
             return response()->json(['message'=>'Record not found!'], 404);
         }
+        $author->update($request->all());
         return response()->json($author, 200);
     }
 
@@ -54,6 +55,7 @@ class AuthorController extends Controller
         if(is_null($author)){
             return response()->json(['message'=>'Record not found!'], 404);
         }
+        $author->delete();
         return response()->json(null, 204);
     }
 }

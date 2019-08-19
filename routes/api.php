@@ -17,8 +17,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('author', 'AuthorController@author');
-Route::get('author/{id}', 'AuthorController@authorByID');
-Route::post('author', 'AuthorController@authorSave');
-Route::put('author/{id}', 'AuthorController@authorUpdate');
-Route::delete('author/{id}', 'AuthorController@authorDelete');
+Route::group(['middleware'=>['auth:api']], function () {
+
+    Route::get('author', 'AuthorController@author');
+    Route::get('author/{id}', 'AuthorController@authorByID');
+    Route::post('author', 'AuthorController@authorSave');
+    Route::put('author/{id}', 'AuthorController@authorUpdate');
+    Route::delete('author/{id}', 'AuthorController@authorDelete');
+
+    Route::apiResource('book','BookController');
+
+});
+
+
+Route::post('/register','AuthController@register');
+Route::post('/login','AuthController@login');
