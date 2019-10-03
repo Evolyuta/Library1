@@ -1,0 +1,340 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Library API documentation",
+        "contact": {
+            "email": "dima.97_97@mail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api/v1",
+            "description": "Library API server"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Registation",
+                "operationId": "registerCreate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Login",
+                "operationId": "loginCreate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/authors": {
+            "post": {
+                "tags": [
+                    "Authors"
+                ],
+                "summary": "Create yet another author record",
+                "operationId": "authorCreate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthorStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/books": {
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Display a listing of the books",
+                "operationId": "book",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "Empty set"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Create yet another example record",
+                "operationId": "exampleCreate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    },
+                    "404": {
+                        "description": "Author not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuthorStoreRequest": {
+                "title": "Author storring request",
+                "description": "Some simple request create as example",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    },
+                    "surname": {
+                        "title": "Surname",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    },
+                    "middlename": {
+                        "title": "Middlename",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    },
+                    "country": {
+                        "title": "Country",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    }
+                },
+                "type": "object"
+            },
+            "BookStoreRequest": {
+                "title": "Book storring request",
+                "description": "Some simple request create as example",
+                "properties": {
+                    "title": {
+                        "title": "Title",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    },
+                    "publisher": {
+                        "title": "Publisher",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    },
+                    "cover": {
+                        "title": "Cover",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "enum",
+                        "example": "soft"
+                    },
+                    "author_id": {
+                        "title": "Author Id",
+                        "description": "Some integer",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": "1"
+                    },
+                    "year": {
+                        "title": "Year",
+                        "description": "Some integer",
+                        "type": "integer",
+                        "format": "year",
+                        "example": "1"
+                    },
+                    "pagesAmount": {
+                        "title": "Value",
+                        "description": "Some integer",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginStoreRequest": {
+                "title": "Login storring request",
+                "description": "Some simple request create as example",
+                "properties": {
+                    "email": {
+                        "title": "Email",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "email",
+                        "example": "test5@test.com"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterStoreRequest": {
+                "title": "Register storring request",
+                "description": "Some simple request create as example",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test5@test.com"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "email",
+                        "example": "test"
+                    },
+                    "password_confirmation": {
+                        "title": "Password confirmation",
+                        "description": "Some text field",
+                        "type": "string",
+                        "format": "string",
+                        "example": "test"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Books",
+            "description": "Books"
+        },
+        {
+            "name": "Authors",
+            "description": "Authors"
+        },
+        {
+            "name": "Authorization",
+            "description": "Authorization"
+        }
+    ]
+}

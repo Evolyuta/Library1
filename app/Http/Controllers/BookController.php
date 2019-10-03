@@ -5,12 +5,34 @@ namespace App\Http\Controllers;
 use App\Author;
 use App\Book;
 use App\Http\Resources\BookResource;
+use http\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/books",
+     *     operationId="book",
+     *     tags={"Books"},
+     *     summary="Display a listing of the books",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success"
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Empty set"
+     *     )
+     * )
+     *
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     /**
      * Display a listing of the resource.
      *
@@ -19,25 +41,45 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::get();
-
+        if (count($books) == 0) {
+            return response()->json(['message' => 'Empty set'], 404);
+        }
         foreach ($books as $book) {
-            $book['author_id'] = $this->getAuthorName($book);
+            $book['author'] = $this->getAuthor($book);
         }
 
         return response()->json($books, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
     }
 
     /**
+     * @OA\Post(
+     *     path="/books",
+     *     operationId="exampleCreate",
+     *     tags={"Books"},
+     *     summary="Create yet another example record",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response="201",
+     *         description="Created"
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Invalid data"
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/BookStoreRequest")
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Author not found"
+     *     )
+     * )
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
@@ -46,20 +88,22 @@ class BookController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'title'       => 'required',
-            'pagesAmount' => 'required',
-            'year'        => 'required',
-            'publisher'   => 'required',
-            'cover'       => 'required',
-            'author_id'   => 'required',
+            'title'       => 'required|string',
+            'pagesAmount' => 'required|integer',
+            'year'        => 'required|integer',
+            'publisher'   => 'required|string',
+            'cover'       => 'required|string|in:soft,hard',
+            'author_id'   => 'required|integer',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
+        if (is_null($this->isAuthorExist($request))) {
+            return response()->json(['message' => 'Author not found'], 404);
+        }
         $book = Book::create($request->all());
-
-        $book['author_id'] = $this->getAuthorName($book);
+        $book['author'] = $this->getAuthor($book);
 
         return response()->json($book, 201);
     }
@@ -75,12 +119,12 @@ class BookController extends Controller
 
         $bookId = Book::find($id);
         if (is_null($bookId)) {
-            return response()->json(['message' => 'Record not found!'], 404);
+            return response()->json(['message' => 'Record not found'], 404);
         }
 
         $book = Book::find($id);
 
-        $book['author_id'] = $this->getAuthorName($book);
+        $book['author'] = $this->getAuthor($book);
 
         return response()->json($book, 200);
     }
@@ -105,13 +149,17 @@ class BookController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (is_null($this->isAuthorExist($request))) {
+            return response()->json(['message' => 'Author not found'], 404);
+        }
         $book = Book::find($id);
         if (is_null($book)) {
-            return response()->json(['message' => 'Record not found!'], 404);
+            return response()->json(['message' => 'Record not found'], 404);
         }
         $book->update($request->all());
 
-        $book['author_id'] = $this->getAuthorName($book);
+
+        $book['author'] = $this->getAuthor($book);
 
         return response()->json($book, 200);
     }
@@ -126,25 +174,28 @@ class BookController extends Controller
     {
         $book = Book::find($id);
         if (is_null($book)) {
-            return response()->json(['message' => 'Record not found!'], 404);
+            return response()->json(['message' => 'Record not found'], 404);
         }
         $book->delete();
         return response()->json(null, 204);
     }
 
-    private function getAuthorName($book)
+    private function getAuthor($book)
     {
+        $book = $book->toArray();
         $authorId = Book::where('id', $book['id'])->pluck('author_id');
         $author = Author::find($authorId);
         $author = $author[0];
 
-        $book['author_id'] = [
-            'name'       => $author['name'],
-            'surname'    => $author['surname'],
-            'middlename' => $author['middlename'],
-        ];
+        return $author;
+    }
 
-        return $book['author_id'];
+    private function isAuthorExist($request)
+    {
+        $authorId = $request->toArray()['author_id'];
+        $author = Author::find($authorId);
+        return $author;
+
     }
 
 }
