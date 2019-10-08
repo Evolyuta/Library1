@@ -27,8 +27,10 @@ Route::group(['middleware'=>['auth:api']], function () {
 
     Route::resource('books','BookController');
 
+
 });
 
 
 Route::post('/register','AuthController@register');
 Route::post('/login','AuthController@login');
+Route::get('/users/{id}','AuthController@get');

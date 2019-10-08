@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -37,6 +39,8 @@ class AuthController extends Controller
     {
         $rules = [
             'name'     => 'required',
+            'surname'     => 'required',
+            'company'     => 'required',
             'email'    => 'email|required|unique:users',
             'password' => 'required|confirmed',
         ];
@@ -45,9 +49,13 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
+
         $validatedData['password'] = bcrypt($request->password);
+        $validatedData['uuid'] = Str::uuid();
 
         $user = User::create($validatedData);
+
+//        dd($user['uuid']);
 
         $accessToken = $user->createToken('authToken')->accessToken;
 
@@ -102,5 +110,10 @@ class AuthController extends Controller
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
 
         return response(['user' => auth()->user(), 'access_token' => $accessToken], 200);
+    }
+
+    public function get($uuid){
+        $user = DB::table('users')->where('uuid', $uuid)->get();
+        return response()->json($user, 200);
     }
 }
