@@ -93,7 +93,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $rules = [
-            'email' => 'email|required',
+            'uuid' => 'required',
             'password' => 'required',
         ];
         $loginData = $request->all();
@@ -103,8 +103,8 @@ class AuthController extends Controller
         }
 
         if (!auth()->attempt($loginData)) {
-            if (!User::where('email', '=', $loginData['email'])->first()) {
-                return response(['error' => 'Wrong email'], 401);
+            if (!User::where('uuid', '=', $loginData['uuid'])->first()) {
+                return response(['error' => 'Wrong uuid'], 401);
             };
             if (!User::where('password_decrypt', '=', $loginData['password'])->first()) {
                 return response(['error' => 'Wrong password'], 401);
