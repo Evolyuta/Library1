@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -115,9 +114,8 @@ class AuthController extends Controller
         return response(['access_token' => $accessToken], 200);
     }
 
-    public function get($uuid)
+    public function get()
     {
-        $user = DB::table('users')->where('uuid', $uuid)->get();
-        return response()->json($user, 200);
+        return response()->json(User::get(), 200);
     }
 }

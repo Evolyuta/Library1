@@ -25,6 +25,10 @@ Route::group(['middleware' => ['auth:api', 'cors']], function () {
     Route::put('authors/{id}', 'AuthorController@authorUpdate');
     Route::delete('authors/{id}', 'AuthorController@authorDelete');
 
+    Route::get('documents_active', 'DocumentController@documentActive');
+    Route::get('documents_inactive', 'DocumentController@documentInactive');
+    Route::post('documents', 'DocumentController@store');
+
     Route::resource('books', 'BookController');
 
 });
@@ -32,4 +36,4 @@ Route::group(['middleware' => ['auth:api', 'cors']], function () {
 
 Route::post('/register', 'AuthController@register');
 Route::post('/login', 'AuthController@login');
-Route::get('/users/{id}', 'AuthController@get');
+Route::get('/users', 'AuthController@get');
