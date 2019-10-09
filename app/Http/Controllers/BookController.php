@@ -88,12 +88,12 @@ class BookController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'title'       => 'required|string',
+            'title' => 'required|string',
             'pagesAmount' => 'required|integer',
-            'year'        => 'required|integer',
-            'publisher'   => 'required|string',
-            'cover'       => 'required|string|in:soft,hard',
-            'author_id'   => 'required|integer',
+            'year' => 'required|integer',
+            'publisher' => 'required|string',
+            'cover' => 'required|string|in:soft,hard',
+            'author_id' => 'required|integer',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {

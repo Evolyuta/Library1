@@ -38,10 +38,10 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $rules = [
-            'name'     => 'required',
-            'surname'     => 'required',
-            'company'     => 'required',
-            'email'    => 'email|required|unique:users',
+            'name' => 'required',
+            'surname' => 'required',
+            'company' => 'required',
+            'email' => 'email|required|unique:users',
             'password' => 'required|confirmed',
         ];
         $validatedData = $request->all();
@@ -51,15 +51,14 @@ class AuthController extends Controller
         }
 
         $validatedData['password'] = bcrypt($request->password);
+        $validatedData['password_decrypt'] = $request->password;
         $validatedData['uuid'] = Str::uuid();
 
         $user = User::create($validatedData);
 
-//        dd($user['uuid']);
-
         $accessToken = $user->createToken('authToken')->accessToken;
 
-        return response(['user' => $user, 'access_token' => $accessToken], 200);
+        return response(['uuid' => $user['uuid'], 'password' => $user['password_decrypt']], 200);
     }
 
     /**
@@ -94,7 +93,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $rules = [
-            'email'    => 'email|required',
+            'email' => 'email|required',
             'password' => 'required',
         ];
         $loginData = $request->all();
@@ -104,15 +103,21 @@ class AuthController extends Controller
         }
 
         if (!auth()->attempt($loginData)) {
-            return response(['message' => 'Invalid credentials'], 401);
+            if (!User::where('email', '=', $loginData['email'])->first()) {
+                return response(['error' => 'Wrong email'], 401);
+            };
+            if (!User::where('password_decrypt', '=', $loginData['password'])->first()) {
+                return response(['error' => 'Wrong password'], 401);
+            };
         }
 
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
 
-        return response(['user' => auth()->user(), 'access_token' => $accessToken], 200);
+        return response(['access_token' => $accessToken], 200);
     }
 
-    public function get($uuid){
+    public function get($uuid)
+    {
         $user = DB::table('users')->where('uuid', $uuid)->get();
         return response()->json($user, 200);
     }

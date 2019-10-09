@@ -51,10 +51,10 @@ class AuthorController extends Controller
     public function authorSave(Request $request)
     {
         $rules = [
-            'name'       => 'required|string',
-            'surname'    => 'required|string',
+            'name' => 'required|string',
+            'surname' => 'required|string',
             'middlename' => 'required|string',
-            'country'    => 'required|string',
+            'country' => 'required|string',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
