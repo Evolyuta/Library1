@@ -51,14 +51,13 @@ class AuthController extends Controller
         }
 
         $validatedData['password'] = bcrypt($request->password);
-        $validatedData['password_decrypt'] = $request->password;
         $validatedData['uuid'] = Str::uuid();
 
         $user = User::create($validatedData);
 
         $accessToken = $user->createToken('authToken')->accessToken;
 
-        return response(['uuid' => $user['uuid'], 'password' => $user['password_decrypt']], 200);
+        return response(['uuid' => $user['uuid'], 'password' => $request->password], 200);
     }
 
     /**
