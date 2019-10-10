@@ -52,7 +52,8 @@ class AuthController extends Controller
         }
 
         $validatedData['password'] = bcrypt($request->password);
-        $validatedData['uuid'] = Str::uuid();
+//        $validatedData['uuid'] = Str::uuid();
+        $validatedData['uuid'] = $this->createUuid();
 
         $user = User::create($validatedData);
 
@@ -125,5 +126,26 @@ class AuthController extends Controller
     public function get()
     {
         return response()->json(User::get(), 200);
+    }
+
+    private function createUuid()
+    {
+        if (!DB::table('users')->latest('created_at')->pluck('uuid')->first()) {
+            return date("y") . date("m") . "-00001";
+        } else {
+            $monthOfLastUser = explode("-",
+                DB::table('users')->latest('created_at')->pluck('created_at')->first())[1];
+            if ($monthOfLastUser == date("m")) {
+                $indexOfLastUser = explode("-",
+                    DB::table('users')->latest('created_at')->pluck('uuid')->first())[1];
+                $index = $indexOfLastUser + "1";
+                while (strlen($index) < 5) {
+                    $index = "0" . $index;
+                }
+                return date("y") . date("m") . "-" . $index;
+            } else {
+                return date("y") . date("m") . "-00001";
+            }
+        }
     }
 }
