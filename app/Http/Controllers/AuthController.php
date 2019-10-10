@@ -133,19 +133,26 @@ class AuthController extends Controller
         if (!DB::table('users')->latest('created_at')->pluck('uuid')->first()) {
             return date("y") . date("m") . "-00001";
         } else {
+
             $monthOfLastUser = explode("-",
                 DB::table('users')->latest('created_at')->pluck('created_at')->first())[1];
-            if ($monthOfLastUser == date("m")) {
+            $yearOfLastUser = substr(explode("-",
+                DB::table('users')->latest('created_at')->pluck('created_at')->first())[0], 2, 2);
+
+            if ($monthOfLastUser == date("m") && $yearOfLastUser == date("y")) {
+
                 $indexOfLastUser = explode("-",
                     DB::table('users')->latest('created_at')->pluck('uuid')->first())[1];
                 $index = $indexOfLastUser + "1";
                 while (strlen($index) < 5) {
                     $index = "0" . $index;
                 }
+
                 return date("y") . date("m") . "-" . $index;
             } else {
                 return date("y") . date("m") . "-00001";
             }
+
         }
     }
 }
