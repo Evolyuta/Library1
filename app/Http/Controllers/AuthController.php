@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -112,6 +114,12 @@ class AuthController extends Controller
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
 
         return response(['access_token' => $accessToken], 200);
+    }
+
+    public function logout()
+    {
+        $userId = auth()->user()->id;
+        DB::table('oauth_access_tokens')->where('user_id', '=', $userId)->delete();
     }
 
     public function get()

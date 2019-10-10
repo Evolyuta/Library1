@@ -31,6 +31,8 @@ Route::group(['middleware' => ['auth:api', 'cors']], function () {
 
     Route::resource('books', 'BookController');
 
+    Route::post('/logout','AuthController@logout');
+
 });
 
 
