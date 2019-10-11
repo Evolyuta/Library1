@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Laravel\Passport\Bridge\AccessToken;
 
 class AuthController extends Controller
 {
@@ -57,8 +58,6 @@ class AuthController extends Controller
 
         $user = User::create($validatedData);
 
-        $accessToken = $user->createToken('authToken')->accessToken;
-
         return response(['uuid' => $user['uuid'], 'password' => $request->password], 200);
     }
 
@@ -106,10 +105,9 @@ class AuthController extends Controller
         if (!auth()->attempt($loginData)) {
             if (!User::where('uuid', '=', $loginData['uuid'])->first()) {
                 return response(['error' => 'Wrong uuid'], 401);
-            };
-            if (!User::where('password_decrypt', '=', $loginData['password'])->first()) {
+            } else {
                 return response(['error' => 'Wrong password'], 401);
-            };
+            }
         }
 
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
@@ -119,8 +117,8 @@ class AuthController extends Controller
 
     public function logout()
     {
-        $userId = auth()->user()->id;
-        DB::table('oauth_access_tokens')->where('user_id', '=', $userId)->delete();
+        $tokenId = auth()->user()->token()->id;
+        DB::table('oauth_access_tokens')->where('id', '=', $tokenId)->delete();
     }
 
     public function get()
